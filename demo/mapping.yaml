@@ -1,0 +1,48 @@
+
+mapping:
+  objects:
+    fellow:
+      obj: 'entity'
+      schemata: ['fellow']
+    org:
+      obj: 'entity'
+      schemata: ['news_organization']
+    relation:
+      obj: 'relation'
+      source: 'fellow'
+      target: 'org'
+      schema: 'fellowship'
+  columns:
+    - column: 'fellow_name'
+      object: 'fellow'
+      property: 'name'
+      required: true
+      skip_empty: false
+    - column: 'organization_name'
+      object: 'org'
+      property: 'name'
+      required: true
+      skip_empty: false
+    - column: 'twitter_handle'
+      object: 'fellow'
+      property: 'twitter_handle'
+      required: false
+      skip_empty: true
+    - column: 'organization_url'
+      object: 'org'
+      property: 'url'
+      required: false
+      skip_empty: true
+    - column: 'start_date'
+      object: 'relation'
+      property: 'start_date'
+      type: 'date'
+      required: true
+      skip_empty: true
+    - column: 'end_date'
+      object: 'relation'
+      property: 'end_date'
+      type: 'date'
+      required: true
+      skip_empty: true
+
