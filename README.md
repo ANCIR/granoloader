@@ -26,6 +26,8 @@ Since the association between input file columns and the properties of
 the entities and relations cannot be inferred easily, an explicit
 mapping is required to be given in the form of a YAML file.
 
+### File format
+
 The YAML file must have sections to define which set of entities and 
 relations should be generated from each row of the input data. This
 can be used to import either a single entity per row, two entities and
@@ -81,6 +83,8 @@ The ``skip_empty`` field will make sure that when the cell for
 ``director_gender`` is empty, no property will be set on the imported 
 entity (rather than creating a property with a null value).
 
+### Source annotation
+
 Finally, you can add information on the source of each row or even cell
 of the data. On the level of the ``mapping``, you can set a key for 
 ``source_url`` that will be applied to all entities and relations. In 
@@ -88,3 +92,11 @@ each entity or relation, you can either set ``source_url`` to give a
 string URL, or ``source_url_column`` to reference the value of a specific
 column and take its value as the source. The same can be done on a
 per-column basis.
+
+### Type conversion
+
+If you want to import non-string property values, you can set ``type``
+on the appropriate column specification to convert the data. Valid types
+include ``int``, ``float``, ``boolean`` and ``datetime``. For ``datetime``,
+a further setting, ``format`` can be given as a Python date format string.
+If it is not specified, the date format will be guessed.

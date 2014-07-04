@@ -18,7 +18,8 @@ setup(
     install_requires=[
         "grano-client>=0.3",
         "unicodecsv>=0.9.4",
-        "click>=2.3"
+        "click>=2.3",
+        "python-dateutil>=2.2"
     ],
     tests_require=[],
     entry_points="""

@@ -1,4 +1,9 @@
+from datetime import datetime
+
+from dateutil import parser
 from granoclient.loader import Loader
+
+BOOL_TRUISH = ['t', 'true', 'yes', 'y', '1']
 
 
 def is_empty(value):
@@ -17,6 +22,31 @@ class ObjectMapper(object):
         self.name = name
         self.model = model
 
+    def convert_type(self, value, spec):
+        """ Some well-educated format guessing. """
+        data_type = spec.get('type', 'string').lower().strip()
+        if data_type in ['bool', 'boolean']:
+            return value.lower() in BOOL_TRUISH
+        elif data_type in ['int', 'integer']:
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return None
+        elif data_type in ['float', 'decimal', 'real']:
+            try:
+                return float(value)
+            except (ValueError, TypeError):
+                return None
+        elif data_type in ['date', 'datetime', 'timestamp']:
+            try:
+                if 'format' in spec:
+                    return datetime.strptime(value, spec.get('format'))
+                else:
+                    return parser.parse(value)
+            except:
+                return None
+        return value
+
     def get_value(self, spec, row):
         column = spec.get('column')
         if column is None:
@@ -24,7 +54,7 @@ class ObjectMapper(object):
         value = row.get(column)
         if is_empty(value):
             return None
-        return value
+        return self.convert_type(value, spec)
 
     def get_source(self, spec, row):
         """ Sources can be specified as plain strings or as a reference to a column. """
