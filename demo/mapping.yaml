@@ -1,14 +1,13 @@
 
 mapping:
-  objects:
+  source_url: 'http://opennews.org'
+  entities:
     fellow:
-      obj: 'entity'
       schemata: ['fellow']
     org:
-      obj: 'entity'
       schemata: ['news_organization']
+  relations:
     relation:
-      obj: 'relation'
       source: 'fellow'
       target: 'org'
       schema: 'fellowship'
