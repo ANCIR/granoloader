@@ -6,9 +6,13 @@ inserting new data.
 
 ## Usage
 
-The command can be used like this:
+The command can be used to load CSV files like this:
 
-	granoload mapping_file.yaml data_file.csv
+	granoload csv mapping_file.yaml data_file.csv
+
+Similarly, schema definitions can be loaded from a YAML file:
+
+  granoload schema schema-definitions.yaml
 	
 To load data to a grano instance, you will also need to set the grano
 host name, api key and project name. These can be provided through the

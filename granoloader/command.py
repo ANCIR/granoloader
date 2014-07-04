@@ -26,18 +26,29 @@ def make_client(host, project_name, api_key):
     return client.get(project_name)
 
 
-@click.command()
+def init():
+    app(obj={})
+
+
+@click.group()
 @click.option('--host', '-h', envvar='GRANO_HOST',
               help='Host name of the grano instance to be loaded')
 @click.option('--project', '-p', envvar='GRANO_PROJECT',
               help='Project slug to be loaded')
 @click.option('--api-key', '-k', envvar='GRANO_APIKEY',
               help='API key with write access to the project')
+@click.pass_context
+def app(ctx, host, project, api_key):
+    ctx.obj['grano'] = make_client(host, project, api_key)
+
+
+@app.command()
 @click.option('--force', '-f', default=False, is_flag=True,
               help='Continue loading upon errors')
 @click.argument('mapping', type=click.File('rb'))
 @click.argument('data', type=click.File('rb'))
-def load(host, project, api_key, force, mapping, data):
+@click.pass_context
+def csv(ctx, force, mapping, data):
     """ Load CSV data into a grano instance using a mapping specification. """
 
     # Find out how many lines there are (for the progress bar).
@@ -47,9 +58,8 @@ def load(host, project, api_key, force, mapping, data):
     data.seek(0)
 
     # set up objects
-    grano = make_client(host, project, api_key)
     mapping = yaml.load(mapping)
-    mapping_loader = MappingLoader(grano, mapping)
+    mapping_loader = MappingLoader(ctx.obj['grano'], mapping)
 
     with click.progressbar(DictReader(data),
                            label=data.name,
@@ -67,3 +77,16 @@ def load(host, project, api_key, force, mapping, data):
                 click.secho(msg, fg='red', bold=True)
                 if not force:
                     return -1
+
+
+@app.command()
+@click.argument('schema', type=click.File('rb'))
+@click.pass_context
+def schema(ctx, schema):
+    """ Load schema definitions from a YAML file. """
+    data = yaml.load(schema)
+    if not isinstance(data, (list, tuple)):
+        data = [data]
+    with click.progressbar(data, label=schema.name) as bar:
+        for schema in bar:
+            ctx.obj['grano'].schemata.upsert(schema)

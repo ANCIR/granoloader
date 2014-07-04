@@ -24,6 +24,6 @@ setup(
     tests_require=[],
     entry_points="""
         [console_scripts]
-        granoloader=granoloader.command:load
+        granoloader=granoloader.command:init
     """,
 )
