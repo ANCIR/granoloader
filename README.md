@@ -36,47 +36,45 @@ a relation between them, or any other, more complex, set of linkages.
 Imagine, for example, importing company directorships:
 
 ```yaml
-mapping:
-  entities:
-    director:
-      schemata: ['person']
-    company:
-      schemata: ['company']
-  relations:
-  	 directorship:
-  	   schema: 'directorship'
-  	   source: 'director'
-  	   target: 'company'
+ entities:
+   director:
+     schemata: ['person']
+   company:
+     schemata: ['company']
+ relations:
+ 	 directorship:
+ 	   schema: 'directorship'
+ 	   source: 'director'
+ 	   target: 'company'
 ```
 
 After these objects have been defined, the individual meanings of the
 columns can be defined by referencing the prepared objects:
 
 ```yaml
-mapping:
-	entities:
-	    director:
-	      schemata: ['person']
-	      columns:
-		     - column: 'director_name'
-		       property: 'name'
-		       required: true
-		     - column: 'director_gender'
-              property: 'gender'
-              skip_empty: true
-       company:
-	      schemata: ['company']
-	      columns: 	
-		     - column: 'company_name'
-		       object: 'company'
-		       property: 'name'
-		       required: true
-	  relations:
-	  	 directorship:
-	  	   schema: 'directorship'
-	  	   source: 'director'
-	  	   target: 'company'
-	  	   columns: []      
+entities:
+  director:
+    schemata: ['person']
+    columns:
+	   - column: 'director_name'
+	     property: 'name'
+	     required: true
+      - column: 'director_gender'
+        property: 'gender'
+        skip_empty: true
+  company:
+    schemata: ['company']
+    columns: 	
+	   - column: 'company_name'
+	     object: 'company'
+	     property: 'name'
+	     required: true
+relations:
+  directorship:
+    schema: 'directorship'
+	 source: 'director'
+	 target: 'company'
+	 columns: []      
 ```
 
 The ``skip_empty`` field will make sure that when the cell for

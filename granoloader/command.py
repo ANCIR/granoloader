@@ -48,7 +48,7 @@ def load(host, project, api_key, force, mapping, data):
 
     # set up objects
     grano = make_client(host, project, api_key)
-    mapping = yaml.load(mapping).get('mapping')
+    mapping = yaml.load(mapping)
     mapping_loader = MappingLoader(grano, mapping)
 
     with click.progressbar(DictReader(data),
