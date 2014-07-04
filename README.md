@@ -52,20 +52,29 @@ columns can be defined by referencing the prepared objects:
 
 ```yaml
 mapping:
-	# same sections as above, then:
-	columns:
-      - column: 'director_name'
-        object: 'director'
-        property: 'name'
-        required: true
-      - column: 'company_name'
-        object: 'company'
-        property: 'name'
-        required: true
-      - column: 'director_gender'
-        object: 'director'
-        property: 'gender'
-        skip_empty: true
+	entities:
+	    director:
+	      schemata: ['person']
+	      columns:
+		     - column: 'director_name'
+		       property: 'name'
+		       required: true
+		     - column: 'director_gender'
+              property: 'gender'
+              skip_empty: true
+       company:
+	      schemata: ['company']
+	      columns: 	
+		     - column: 'company_name'
+		       object: 'company'
+		       property: 'name'
+		       required: true
+	  relations:
+	  	 directorship:
+	  	   schema: 'directorship'
+	  	   source: 'director'
+	  	   target: 'company'
+	  	   columns: []      
 ```
 
 The ``skip_empty`` field will make sure that when the cell for

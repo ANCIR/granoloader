@@ -13,13 +13,9 @@ class RowException(Exception):
 
 class ObjectMapper(object):
 
-    def __init__(self, name, model, columns):
+    def __init__(self, name, model):
         self.name = name
         self.model = model
-        self.columns = []
-        for column in columns:
-            if column.get('object') == self.name:
-                self.columns.append(column)
 
     def get_value(self, spec, row):
         column = spec.get('column')
@@ -40,7 +36,7 @@ class ObjectMapper(object):
     def load_properties(self, obj, row):
         source_url = self.get_source(self.model, row)
 
-        for column in self.columns:
+        for column in self.model.get('columns'):
             col_source_url = self.get_source(column, row)
             col_source_url = col_source_url or source_url
 
@@ -91,12 +87,12 @@ class MappingLoader(object):
     @property
     def entities(self):
         for name, model in self.model.get('entities').items():
-            yield EntityMapper(name, model, self.model.get('columns'))
+            yield EntityMapper(name, model)
 
     @property
     def relations(self):
         for name, model in self.model.get('relations').items():
-            yield RelationMapper(name, model, self.model.get('columns'))
+            yield RelationMapper(name, model)
 
     def load(self, data):
         """ Load a single row of data and convert it into entities and
