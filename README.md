@@ -81,3 +81,10 @@ The ``skip_empty`` field will make sure that when the cell for
 ``director_gender`` is empty, no property will be set on the imported 
 entity (rather than creating a property with a null value).
 
+Finally, you can add information on the source of each row or even cell
+of the data. On the level of the ``mapping``, you can set a key for 
+``source_url`` that will be applied to all entities and relations. In 
+each entity or relation, you can either set ``source_url`` to give a 
+string URL, or ``source_url_column`` to reference the value of a specific
+column and take its value as the source. The same can be done on a
+per-column basis.
