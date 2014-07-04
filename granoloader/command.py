@@ -7,6 +7,10 @@ from granoclient import Grano, GranoException
 from granoloader.mapping import MappingLoader, RowException
 
 logging.basicConfig(level=logging.WARN)
+
+gc_log = logging.getLogger("granoclient")
+gc_log.setLevel(logging.ERROR)
+
 log = logging.getLogger()
 
 
