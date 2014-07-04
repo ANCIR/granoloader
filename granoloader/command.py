@@ -53,7 +53,7 @@ def csv(ctx, force, mapping, data):
 
     # Find out how many lines there are (for the progress bar).
     lines = 0
-    for line in data.xreadlines():
+    for line in DictReader(data):
         lines += 1
     data.seek(0)
 

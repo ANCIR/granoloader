@@ -116,12 +116,12 @@ class MappingLoader(object):
 
     @property
     def entities(self):
-        for name, model in self.model.get('entities').items():
+        for name, model in self.model.get('entities', {}).items():
             yield EntityMapper(name, model)
 
     @property
     def relations(self):
-        for name, model in self.model.get('relations').items():
+        for name, model in self.model.get('relations', {}).items():
             yield RelationMapper(name, model)
 
     def load(self, data):
