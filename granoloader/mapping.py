@@ -50,6 +50,8 @@ class ObjectMapper(object):
     @property
     def columns(self):
         for column in self.model.get('columns'):
+            if 'default' in column:
+                column['required'] = False
             if column.get('skip_empty'):
                 column['required'] = False
             yield self._patch_column(column)
@@ -59,10 +61,15 @@ class ObjectMapper(object):
 
     def get_value(self, spec, row):
         column = spec.get('column')
+        default = spec.get('default')
         if column is None:
+            if default is not None:
+                return self.convert_type(default, spec)
             return
         value = row.get(column)
         if is_empty(value):
+            if default is not None:
+                return self.convert_type(default, spec)
             return None
         return self.convert_type(value, spec)
 
