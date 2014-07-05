@@ -47,6 +47,16 @@ class ObjectMapper(object):
                 return None
         return value
 
+    @property
+    def columns(self):
+        for column in self.model.get('columns'):
+            if column.get('skip_empty'):
+                column['required'] = False
+            yield self._patch_column(column)
+
+    def _patch_column(self, column):
+        return column
+
     def get_value(self, spec, row):
         column = spec.get('column')
         if column is None:
@@ -66,18 +76,22 @@ class ObjectMapper(object):
     def load_properties(self, obj, row):
         source_url = self.get_source(self.model, row)
 
-        for column in self.model.get('columns'):
+        for column in self.columns:
             col_source_url = self.get_source(column, row)
             col_source_url = col_source_url or source_url
 
             value = self.get_value(column, row)
-            if value is None and column.get('required', False):
+            if value is None and column.get('required', True):
                 raise RowException('%s is not valid: %s' % (
                     column.get('column'), row.get(column.get('column'))))
-            if value is None and column.get('skip_empty', True):
+            if value is None and column.get('skip_empty', False):
                 continue
             obj.set(column.get('property'), value,
                     source_url=source_url)
+
+            if column.get('unique', False):
+                obj.unique(column.get('property'),
+                           only_active=column.get('unique_active', True))
 
 
 class EntityMapper(ObjectMapper):
@@ -89,6 +103,12 @@ class EntityMapper(ObjectMapper):
         self.load_properties(entity, row)
         entity.save()
         return entity
+
+    def _patch_column(self, column):
+        if column.get('property') == 'name':
+            column['unique'] = True
+            column['unique_active'] = False
+        return column
 
 
 class RelationMapper(ObjectMapper):
