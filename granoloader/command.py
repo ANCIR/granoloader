@@ -1,8 +1,11 @@
+import os
 import click
 import logging
+
 import yaml
 from unicodecsv import DictReader
 from granoclient import Grano, GranoException
+from thready import threaded
 
 from granoloader.mapping import MappingLoader, RowException
 
@@ -49,10 +52,12 @@ def app(ctx, host, project, api_key):
 @app.command()
 @click.option('--force', '-f', default=False, is_flag=True,
               help='Continue loading upon errors')
+@click.option('--threads', '-t', default=1, type=int,
+              help='Parallel threads to run')
 @click.argument('mapping', type=click.File('rb'))
 @click.argument('data', type=click.File('rb'))
 @click.pass_context
-def csv(ctx, force, mapping, data):
+def csv(ctx, force, threads, mapping, data):
     """ Load CSV data into a grano instance using a mapping specification. """
 
     # Find out how many lines there are (for the progress bar).
@@ -65,22 +70,30 @@ def csv(ctx, force, mapping, data):
     mapping = yaml.load(mapping)
     mapping_loader = MappingLoader(ctx.obj['grano'], mapping)
 
-    with click.progressbar(DictReader(data),
-                           label=data.name,
-                           length=lines) as bar:
-        for i, row in enumerate(bar):
-            try:
-                mapping_loader.load(row)
-            except GranoException, ge:
-                msg = '\nServer error: %s' % ge.message
-                click.secho(msg, fg='red', bold=True)
-                if not force:
-                    return -1
-            except RowException, re:
-                msg = '\nRow %s: %s' % (i, re.message)
-                click.secho(msg, fg='red', bold=True)
-                if not force:
-                    return -1
+    def process_row(row):
+        try:
+            mapping_loader.load(row)
+        except GranoException, ge:
+            msg = '\nServer error: %s' % ge.message
+            click.secho(msg, fg='red', bold=True)
+            if not force:
+                os._exit(1)
+        except RowException, re:
+            msg = '\nRow %s: %s' % (row['__row_id__'], re.message)
+            click.secho(msg, fg='red', bold=True)
+            if not force:
+                os._exit(1)
+
+    def generate():
+        with click.progressbar(DictReader(data),
+                               label=data.name,
+                               length=lines) as bar:
+            for i, row in enumerate(bar):
+                row['__row_id__'] = i
+                yield row
+
+    threaded(generate(), process_row, num_threads=threads,
+             max_queue=1)
 
 
 @app.command()
