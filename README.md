@@ -8,11 +8,11 @@ inserting new data.
 
 The command can be used to load CSV files like this:
 
-    granoload csv mapping_file.yaml data_file.csv
+    granoloader csv mapping_file.yaml data_file.csv
 
 Similarly, schema definitions can be loaded from a YAML file:
 
-    granoload schema schema-definitions.yaml
+    granoloader schema schema-definitions.yaml
 	
 To load data to a grano instance, you will also need to set the grano
 host name, api key and project name. These can be provided through the
@@ -60,25 +60,24 @@ entities:
   director:
     schemata: ['person']
     columns:
-	   - column: 'director_name'
-	     property: 'name'
-	     required: true
+	    - column: 'director_name'
+	      property: 'name'
+	      required: true
       - column: 'director_gender'
         property: 'gender'
         skip_empty: true
   company:
     schemata: ['company']
     columns: 	
-	   - column: 'company_name'
-	     object: 'company'
-	     property: 'name'
-	     required: true
+	    - column: 'company_name'
+	      property: 'name'
+	      required: true
 relations:
   directorship:
     schema: 'directorship'
-	 source: 'director'
-	 target: 'company'
-	 columns: []      
+	  source: 'director'
+	  target: 'company'
+	  columns: []
 ```
 
 The ``skip_empty`` field will make sure that when the cell for
