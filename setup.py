@@ -1,10 +1,12 @@
 import os
 from setuptools import setup, find_packages
 
+VERSION = os.path.join(os.path.dirname(__file__), 'VERSION')
+VERSION = open(VERSION, 'r').read().strip()
 
 setup(
     name='granoloader',
-    version=os.environ.get('GRANO_RELEASE', '0.1.0'),
+    version=VERSION,
     description="Import data to grano using CSV files.",
     long_description="",
     classifiers=[
