@@ -1,5 +1,7 @@
 from datetime import datetime
+from StringIO import StringIO
 
+import requests
 from dateutil import parser
 from granoclient.loader import Loader
 
@@ -45,6 +47,11 @@ class ObjectMapper(object):
                     return parser.parse(value)
             except:
                 return None
+        elif data_type == 'file':
+            try:
+                return self._get_file(value)
+            except:
+                raise
         return value
 
     @property
@@ -58,6 +65,12 @@ class ObjectMapper(object):
 
     def _patch_column(self, column):
         return column
+
+    def _get_file(self, url):
+        response = requests.get(url)
+        file_like_obj = StringIO(response.content)
+        file_like_obj.name = url
+        return file_like_obj
 
     def get_value(self, spec, row):
         column = spec.get('column')
