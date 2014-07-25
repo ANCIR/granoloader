@@ -1,10 +1,11 @@
 import os
+import sys
 import click
 import logging
 
 import yaml
 from unicodecsv import DictReader
-from granoclient import Grano, GranoException
+from granoclient import Grano, GranoException, NotFound
 from thready import threaded
 
 from granoloader.mapping import MappingLoader, RowException
@@ -17,7 +18,7 @@ gc_log.setLevel(logging.ERROR)
 log = logging.getLogger()
 
 
-def make_client(host, project_name, api_key):
+def make_client(host, project_name, api_key, create_project):
     """ Instantiate the grano client based on environment variables or
     command line settings. """
     if host is None:
@@ -30,7 +31,13 @@ def make_client(host, project_name, api_key):
 
     client = Grano(api_host=host,
                    api_key=api_key)
-    return client.get(project_name)
+    try:
+        return client.get(project_name)
+    except NotFound:
+        if not create_project:
+            sys.exit(-1)
+        data = {'slug': project_name, 'label': project_name}
+        return client.projects.create(data)
 
 
 def init():
@@ -44,9 +51,11 @@ def init():
               help='Project slug to be loaded')
 @click.option('--api-key', '-k', envvar='GRANO_APIKEY',
               help='API key with write access to the project')
+@click.option('--create-project/--no-create-project', default=False,
+              help='If the project doesn\'t exist yet, create it')
 @click.pass_context
-def app(ctx, host, project, api_key):
-    ctx.obj['grano'] = make_client(host, project, api_key)
+def app(ctx, host, project, api_key, create_project):
+    ctx.obj['grano'] = make_client(host, project, api_key, create_project)
 
 
 @app.command()
