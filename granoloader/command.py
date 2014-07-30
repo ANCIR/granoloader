@@ -88,9 +88,9 @@ def csv(ctx, force, threads, mapping, data):
             if not force:
                 os._exit(1)
         except RowException, re:
-            msg = '\nRow %s: %s' % (row['__row_id__'], re.message)
-            click.secho(msg, fg='red', bold=True)
             if not force:
+                msg = '\nRow %s: %s' % (row['__row_id__'], re.message)
+                click.secho(msg, fg='red', bold=True)
                 os._exit(1)
 
     def generate():
