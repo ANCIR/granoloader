@@ -98,6 +98,6 @@ per-column basis.
 
 If you want to import non-string property values, you can set ``type``
 on the appropriate column specification to convert the data. Valid types
-include ``int``, ``float``, ``boolean`` and ``datetime``. For ``datetime``,
+include ``int``, ``float``, ``boolean``, ``datetime`` and ``file``. For ``datetime``,
 a further setting, ``format`` can be given as a Python date format string.
-If it is not specified, the date format will be guessed.
+If it is not specified, the date format will be guessed. The ``file`` type expects a url string. ``granoloader`` will retrieve the file at the url.
