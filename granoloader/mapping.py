@@ -118,7 +118,7 @@ class EntityMapper(ObjectMapper):
 
     def load(self, loader, row):
         source_url = self.get_source(self.model, row)
-        entity = loader.make_entity(self.model.get('schemata'),
+        entity = loader.make_entity(self.model.get('schema'),
                                     source_url=source_url)
         self.load_properties(entity, row)
         entity.save()

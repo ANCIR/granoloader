@@ -1,7 +1,7 @@
 source_url: 'http://opennews.org'
 entities:
   fellow:
-    schemata: ['fellow']
+    schema: 'Fellow'
     columns:
       - column: 'fellow_name'
         property: 'name'
@@ -13,7 +13,7 @@ entities:
         required: false
         skip_empty: true
   org:
-    schemata: ['news_organization']
+    schema: 'NewsOrganization'
     columns:
       - column: 'organization_name'
         object: 'org'
@@ -29,17 +29,17 @@ relations:
   relation:
     source: 'fellow'
     target: 'org'
-    schema: 'fellowship'
+    schema: 'Fellowship'
     columns:
       - column: 'start_date'
         object: 'relation'
-        property: 'start_date'
+        property: 'date_start'
         type: 'date'
         required: true
         skip_empty: true
       - column: 'end_date'
         object: 'relation'
-        property: 'end_date'
+        property: 'date_end'
         type: 'date'
         required: true
         skip_empty: true

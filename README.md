@@ -42,9 +42,9 @@ Imagine, for example, importing company directorships:
 ```yaml
  entities:
    director:
-     schemata: ['person']
+     schema: 'Person'
    company:
-     schemata: ['company']
+     schema: 'Company'
  relations:
  	 directorship:
  	   schema: 'directorship'
@@ -58,7 +58,7 @@ columns can be defined by referencing the prepared objects:
 ```yaml
 entities:
   director:
-    schemata: ['person']
+    schema: 'Person'
     columns:
 	    - column: 'director_name'
 	      property: 'name'
@@ -67,7 +67,7 @@ entities:
         property: 'gender'
         skip_empty: true
   company:
-    schemata: ['company']
+    schema: 'Company'
     columns: 	
 	    - column: 'company_name'
 	      property: 'name'
