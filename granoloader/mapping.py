@@ -18,6 +18,10 @@ class RowException(Exception):
     pass
 
 
+class MappingException(Exception):
+    pass
+
+
 class ObjectMapper(object):
 
     def __init__(self, name, model):
@@ -40,19 +44,49 @@ class ObjectMapper(object):
             except (ValueError, TypeError):
                 return None
         elif data_type in ['date', 'datetime', 'timestamp']:
-            try:
-                if 'format' in spec:
-                    return datetime.strptime(value, spec.get('format'))
-                else:
-                    return parser.parse(value)
-            except:
+            if 'format' in spec:
+                format_list = self._get_date_format_list(spec.get('format'))
+                if format_list is None:
+                    raise MappingException(
+                        '%s format mapping is not valid: %r' %
+                        (spec.get('column'), spec.get('format'))
+                    )
+                for format, precision in format_list:
+                    try:
+                        return {'value': datetime.strptime(value, format),
+                                'value_precision': precision}
+                    except (ValueError, TypeError):
+                        pass
                 return None
+            else:
+                try:
+                    return parser.parse(value)
+                except (ValueError, TypeError):
+                    return None
         elif data_type == 'file':
             try:
                 return self._get_file(value)
             except:
                 raise
         return value
+
+    def _get_date_format_list(self, format_value, precision=None):
+        if isinstance(format_value, basestring):
+            return [(format_value, precision)]
+        elif isinstance(format_value, list):
+            return [(fv, precision) for fv in format_value]
+        elif isinstance(format_value, dict):
+            format_list = []
+            # try the most precise format first
+            for key in ('time', 'day', 'month', 'year'):
+                if key not in format_value:
+                    continue
+                format_list.extend(self._get_date_format_list(
+                    format_value[key],
+                    precision=key
+                ))
+            return format_list
+        return None
 
     @property
     def columns(self):
@@ -73,6 +107,7 @@ class ObjectMapper(object):
         return file_like_obj
 
     def get_value(self, spec, row):
+        """ Returns the value or a dict with a 'value' entry plus extra fields. """
         column = spec.get('column')
         default = spec.get('default')
         if column is None:
@@ -101,13 +136,19 @@ class ObjectMapper(object):
             col_source_url = col_source_url or source_url
 
             value = self.get_value(column, row)
+            extra_fields = {}
+            if isinstance(value, dict):
+                extra_fields = value
+                value = extra_fields.get('value')
+                del extra_fields['value']
+
             if value is None and column.get('required', True):
                 raise RowException('%s is not valid: %s' % (
                     column.get('column'), row.get(column.get('column'))))
             if value is None and column.get('skip_empty', False):
                 continue
             obj.set(column.get('property'), value,
-                    source_url=source_url)
+                    source_url=source_url, **extra_fields)
 
             if column.get('unique', False):
                 obj.unique(column.get('property'),
