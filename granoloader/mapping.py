@@ -162,6 +162,8 @@ class EntityMapper(ObjectMapper):
         entity = loader.make_entity(self.model.get('schema'),
                                     source_url=source_url)
         self.load_properties(entity, row)
+        if entity.properties.get('name', None) is None:
+            return
         entity.save()
         return entity
 
