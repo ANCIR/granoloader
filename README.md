@@ -97,7 +97,31 @@ per-column basis.
 ### Type conversion
 
 If you want to import non-string property values, you can set ``type``
-on the appropriate column specification to convert the data. Valid types
-include ``int``, ``float``, ``boolean``, ``datetime`` and ``file``. For ``datetime``,
-a further setting, ``format`` can be given as a Python date format string.
-If it is not specified, the date format will be guessed. The ``file`` type expects a url string. ``granoloader`` will retrieve the file at the url.
+on the appropriate column specification to convert the data. Valid types include ``int``, ``float``, ``boolean``, ``datetime`` and ``file``.
+
+#### Datetime format
+
+For ``datetime``, a further setting, ``format`` can be given as one or more Python date format strings. If it is not specified, the date format will be guessed. The most basic usage is a single format string:
+
+```YAML
+format: '%d/%m/%Y'
+```
+
+To allow dates in multiple formats to be parsed correctly, a list of formats can be supplied:
+
+```YAML
+format: ['%d/%m/%Y', '%d-%m-%Y', '%m/%Y', '%m-%Y']
+```
+
+Datetime values can include a precision specifier. Valid specifiers are 'time', 'day', 'month' and 'year' (from most to least precise). To load both date value and precision, provide a format mapping for one or more of the precision specifiers:
+
+```YAML
+format:
+  day: ['%d-%m-%Y', '%d/%m/%Y']
+  month: ['%m-%Y', '%m/%Y']
+  year: '%Y'
+```
+
+#### File URL
+
+The ``file`` type expects a url string. ``granoloader`` will retrieve the file at the url.
