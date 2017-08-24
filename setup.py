@@ -12,9 +12,9 @@ setup(
     classifiers=[
         ],
     keywords='data client rest grano sna ddj journalism',
-    author='Friedrich Lindenberg',
-    author_email='friedrich@pudo.org',
-    url='https://github.com/granoproject/granoloader',
+    author='Code for Africa',
+    author_email='support@codeforafrica.org',
+    url='https://github.com/CodeForAfrica/granoloader',
     license='MIT',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     zip_safe=False,
@@ -24,6 +24,9 @@ setup(
         "click>=2.3",
         "thready>=0.1.4",
         "python-dateutil>=2.2"
+    ],
+    dependency_links=[
+        'https://github.com/CodeForAfrica/grano-client/tarball/master#egg=grano-client'
     ],
     tests_require=[],
     entry_points="""
